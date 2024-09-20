@@ -6,7 +6,6 @@ import time
 # Logic : Davi Watzeck Souza
 
 
-
 # Configurações
 base_loot_chances = {
     'gold': 0.5,  # Probabilidade base de 50%
@@ -30,10 +29,11 @@ meios = ['ra', 'lo', 'mo', 'zi', 'ka', 'ro', 'ba', 'fi', 'zu', 'ter', 'dor', 'gi
 sufixos = ['gath', 'dor', 'nak', 'rith', 'zan', 'lox', 'moth', 'vor', 'rak', 'gorn', 'tuk', 'kash']
 
 village_name = "Vila Endllage"
-npc_julie = "Julie - A treinadora:"
-ancient_name = "Nyan - O ancião:"
-npc_merchant = "Bueli - O mercante:"
-npc_forger = "Tyson - O ferreiro:"
+npc_trainer = "Jackie Chan - O treinador:"
+npc_merchant = "Barões da Roubadinha - O mercante:"
+npc_forger = "Tony Stark - O ferreiro:"
+npc_priest = "Padre Marcelo - O padre:"
+npc_wizard = "Patolino - O mago:"
 
 current_health = float(100)
 current_mana = float(20)
@@ -53,21 +53,21 @@ mp_pot = 0
 
 armas_atributos = {
     'Peitoral de ferro fundido': {'defesa': 80},
-    'Clava de titânio': {'ataque': 50, 'defesa': 50, 'chance_critico_arma': 0},
-    'Espada de titânio': {'ataque': 45, 'defesa': 50, 'chance_critico_arma': 0},
-    'Machado de titânio': {'ataque': 55, 'defesa': 40, 'chance_critico_arma': 0},
+    'Clava de titânio': {'ataque': 50, 'defesa': 50, 'chance_critico_arma': 0, 'escalonamento_critico': 0},
+    'Espada de titânio': {'ataque': 45, 'defesa': 50, 'chance_critico_arma': 0, 'escalonamento_critico': 0},
+    'Machado de titânio': {'ataque': 55, 'defesa': 40, 'chance_critico_arma': 0, 'escalonamento_critico': 0},
     'Peitoral de aço': {'defesa': 40},
-    'Clava de ferro': {'ataque': 25, 'defesa': 25, 'chance_critico_arma': 0},
-    'Espada de ferro': {'ataque': 20, 'defesa': 30, 'chance_critico_arma': 0},
-    'Machado de ferro': {'ataque': 30, 'defesa': 20, 'chance_critico_arma': 0},
+    'Clava de ferro': {'ataque': 25, 'defesa': 25, 'chance_critico_arma': 0, 'escalonamento_critico': 0},
+    'Espada de ferro': {'ataque': 20, 'defesa': 30, 'chance_critico_arma': 0, 'escalonamento_critico': 0},
+    'Machado de ferro': {'ataque': 30, 'defesa': 20, 'chance_critico_arma': 0, 'escalonamento_critico': 0},
     'Peitoral de ferro': {'defesa': 30},
-    'Clava de pedra': {'ataque': 10, 'defesa': 10, 'chance_critico_arma': 0},
-    'Espada de pedra': {'ataque': 8, 'defesa': 12, 'chance_critico_arma': 0},
-    'Machado de pedra': {'ataque': 12, 'defesa': 8, 'chance_critico_arma': 0},
+    'Clava de pedra': {'ataque': 10, 'defesa': 10, 'chance_critico_arma': 0, 'escalonamento_critico': 0},
+    'Espada de pedra': {'ataque': 8, 'defesa': 12, 'chance_critico_arma': 0, 'escalonamento_critico': 0},
+    'Machado de pedra': {'ataque': 12, 'defesa': 8, 'chance_critico_arma': 0, 'escalonamento_critico': 0},
     'Peitoral de pano': {'defesa': 10},
-    'Clava de madeira': {'ataque': 5, 'defesa': 5, 'chance_critico_arma': 0},
-    'Espada de madeira': {'ataque': 4, 'defesa': 6, 'chance_critico_arma': 0},
-    'Machado de madeira': {'ataque': 6, 'defesa': 4, 'chance_critico_arma': 0}
+    'Clava de madeira': {'ataque': 5, 'defesa': 5, 'chance_critico_arma': 0, 'escalonamento_critico': 0},
+    'Espada de madeira': {'ataque': 4, 'defesa': 6, 'chance_critico_arma': 0, 'escalonamento_critico': 0},
+    'Machado de madeira': {'ataque': 6, 'defesa': 4, 'chance_critico_arma': 0, 'escalonamento_critico': 0}
 }
 
 
@@ -93,6 +93,8 @@ itens_disponiveis_npc_merchant = {
 primeira_visita = True
 first_monster = True
 first_forge = True
+first_church = True
+first_tower = True
 
 armaduras_compradas = []
 armas_compradas = []
@@ -200,7 +202,7 @@ def player_name_choice():
 
 
 def tutorial_choice():
-    tutorial = input(f"{npc_julie} Você deseja fazer o tutorial? (Sim/não): "
+    tutorial = input(f"{npc_trainer} Você deseja fazer o tutorial? (Sim/não): "
                      "\n")
     time.sleep(2)
     if tutorial.upper() == 'SIM' or tutorial.upper() == 'S':
@@ -214,32 +216,23 @@ def tutorial_choice():
 
 
 def tutorial_gameplay():
-    print(f"{npc_julie} Bom vamos lá... a {village_name} foi fundada há 15 anos atrás...")
+    print(f"{npc_trainer} Bom vamos lá... a {village_name} foi fundada há 15 anos atrás...")
     time.sleep(5)
-    print(f"{npc_julie} nosso glorioso ancião que fez tudo isso, ele continua"
-          "\nconstruindo a nossa vila e permitindo que nossa raça evolua"
-          "\nmais do que qualquer uma...")
+    print(f"{npc_trainer} nosso glorioso ancião que fez tudo isso, ele continua construindo a nossa vila e permitindo que nossa raça evolua mais do que qualquer uma...")
     time.sleep(5)
-    print(f'{npc_julie} como a vila é "Recém fundada", temos poucos lugares'
-          '\nque você pode ir aqui, temos a Igreja, a Forja, a Loja de equipamentos e a Torre do conhecimento')
+    print(f'{npc_trainer} como a vila é "Recém fundada", temos poucos lugares que você pode ir aqui, temos a Igreja, a Forja, a Loja de equipamentos e a Torre do conhecimento')
     time.sleep(5)
-    print(f'{npc_julie} A igreja é um local onde você pode ser curado de envenenamentos'
-          '\ne também poder comprar pots de cura e de mana')
+    print(f'{npc_trainer} A igreja é um local onde você pode ser curado de envenenamentos e também poder comprar pots de cura e de mana')
     time.sleep(5)
-    print(f'{npc_julie} A Forja é um lugar onde você pode melhorar seus equipamentos!')
+    print(f'{npc_trainer} A Forja é um lugar onde você pode melhorar seus equipamentos!')
     time.sleep(5)
-    print(f'{npc_julie} A Loja de equipamentos é um lugar onde você'
-          '\npode comprar armaduras, escudos, e outros equipamentos')
+    print(f'{npc_trainer} A Loja de equipamentos é um lugar onde você pode comprar armaduras, escudos, e outros equipamentos')
     time.sleep(5)
-    print(f'{npc_julie} A Torre do conhecimento é um lugar onde você pode'
-          '\nconseguir aprender novas habilidades, sejam elas de suporte,'
-          '\nde ataque e aumento de skills temporárias')
+    print(f'{npc_trainer} A Torre do conhecimento é um lugar onde você pode conseguir aprender novas habilidades, sejam elas de suporte, de ataque e aumento de skills temporárias')
     time.sleep(5)
-    print(f'{npc_julie} E por fim você pode ir para a floresta, onde você'
-          '\nencontra inimigos, matando eles, eles tem incríveis loots'
-          '\nsejam moedas de ouro, peças de armaduras, pots de vida e até mesmo pedras de ressureição. ')
+    print(f'{npc_trainer} E por fim você pode ir para a floresta, onde você encontra inimigos, matando eles, eles tem incríveis loots sejam moedas de ouro, peças de armaduras, pots de vida e até mesmo pedras de ressureição. ')
     time.sleep(7)
-    print(f'{npc_julie} Você já está pronto para começar!')
+    print(f'{npc_trainer} Você já está pronto para começar!')
     storygame()
 
 
@@ -608,67 +601,82 @@ def forge():
     time.sleep(2)
     while True:
         if first_forge is True:
-            print(f'{npc_julie} Na forja é possível melhorar suas armas e armaduras...')
+            print(f'{npc_trainer} Na forja é possível melhorar suas armas e armaduras...')
             time.sleep(2)
 
-            print(f'{npc_julie} Existem 2 tipos de melhoria na arma e armadura:')
+            print(f'{npc_trainer} Existem 2 tipos de melhoria na arma e armadura:')
             time.sleep(2)
 
-            print(f'{npc_julie} 1° Tipo de melhoria na arma:')
-            print(f'{npc_julie} Você adiciona uma possibilidade do seu dano no inimigo critar (x0,5 a mais do ano)')
+            print(f'{npc_trainer} 1° Tipo de melhoria na arma:')
+            print(f'{npc_trainer} Você adiciona uma possibilidade do seu dano no inimigo critar (x0,5 a mais do ano)')
             time.sleep(6.5)
 
-            print(f'{npc_julie} 2° Tipo de melhoria na arma:')
-            print(f'{npc_julie} Você aumenta o dano base, a defesa base e escalonamento do crítico')
+            print(f'{npc_trainer} 2° Tipo de melhoria na arma:')
+            print(f'{npc_trainer} Você aumenta o dano base, a defesa base e escalonamento do crítico')
             time.sleep(4.5)
 
-            print(f'{npc_julie} 1° Tipo de melhoria na armadura:')
-            print(f'{npc_julie} Você aumenta a possibilidade de defender um ataque')
+            print(f'{npc_trainer} 1° Tipo de melhoria na armadura:')
+            print(f'{npc_trainer} Você aumenta a possibilidade de defender um ataque')
             time.sleep(5.5)
 
-            print(f'{npc_julie} 2° Tipo de melhoria na armadura:')
-            print(f'{npc_julie} Você aumenta a possibilidade do seu dano refletir no inimigo (baseado no dano que ele te deu)')
+            print(f'{npc_trainer} 2° Tipo de melhoria na armadura:')
+            print(f'{npc_trainer} Você aumenta a possibilidade do seu dano refletir no inimigo (baseado no dano que ele te deu)')
             time.sleep(7)
 
-            print(f'{npc_julie} Mas é claro que tudo tem seu preço e nem sempre voce pode ter sucesso ao melhorar sua arma hahahaha...')
+            print(f'{npc_trainer} Mas é claro que tudo tem seu preço e nem sempre voce pode ter sucesso ao melhorar sua arma hahahaha...')
             time.sleep(5)
-            print(f'{npc_julie} Vamos começar?')
+            print(f'{npc_trainer} Vamos começar?')
             time.sleep(2)
             if pedra_forja == 1:
-                print(f'{npc_julie} Eu te darei os 50 de ouro, mas vejo que no primeiro monstro você dropou uma pedra de forja, vou poupar a minha então hahahaha')
+                print(f'{npc_trainer} Eu te darei os 50 de ouro, mas vejo que no primeiro monstro você dropou uma pedra de forja, vou poupar a minha então hahahaha')
                 time.sleep(6)
             else:
-                print(f'{npc_julie} Vou te emprestar a minha pedra de forja e te dar 50 de ouro')
+                print(f'{npc_trainer} Vou te emprestar a minha pedra de forja e te dar 50 de ouro')
                 time.sleep(2)
                 pedra_forja += 1
-                print('Você ganhou 1 pedra de forja de Julie')
+                print('Você ganhou 1 pedra de forja de Jackie Chan')
             time.sleep(3)
             gold += 50
-            print('Você ganhou 50 moedas de ouro de Julie')
+            print('Você ganhou 50 moedas de ouro de Jackie Chan')
             time.sleep(2)
 
         if first_forge is True:
-            escolha = input("[1] Aprimorar armas ⚔️ 🦯 🪓")
+            escolha = input("[1] Aprimorar armas ⚔️ 🦯 🪓 "
+                            "\nEscolha uma opção:  ")
         else:
             escolha = input("[1] Aprimorar armas ⚔️ 🦯 🪓"
-                            "[2] Aprimorar armadura 🛡️"
-                            "[3] Sair 🚪")
+                            "\n[2] Aprimorar armadura 🛡️"
+                            "\n[3] Sair 🚪"
+                            "\nEscolha uma opção:  ")
         time.sleep(2)
         if escolha == '1':
             if first_forge is True:
                 print(f'{npc_forger} Qual tipo de aprimoramento?')
-                escolha_1 = input("[1] Aprimorar chance de crítico ➕💥 - (50 de gold e 1 pedra de forja)")
+                escolha_1 = input("[1] Aprimorar chance de crítico ➕💥 - (50 de gold e 1 pedra de forja)"
+                                  "\nEscolha uma opção:  ")
             else:
                 print(f'{npc_forger} Qual tipo de aprimoramento?')
                 escolha_1 = input("[1] Aprimorar chance de crítico ➕💥 - (50 de gold e 1 pedra de forja)"
-                                  "[2] Aprimorar dano base, defesa base e escalonamento do crítico da arma ➕💪 (100 de gold e 2 pedra de forja)"
-                                  "[3] Voltar 🚪")
+                                  "\n[2] Aprimorar dano base, defesa base e escalonamento do crítico da arma ➕💪 (100 de gold e 2 pedra de forja)"
+                                  "\n[3] Voltar 🚪"
+                                  "\nEscolha uma opção:  ")
             time.sleep(2)
             if escolha_1 == '1':
                 if gold >= 50 and pedra_forja >= 1:
                     if first_forge is True:
-                        print(f'{npc_forger} Você aumentou a chance de crítico em 10%!')
-                        chance_critico_arma += 0.1  # 10% chance de crítico
+                        print(f"{npc_forger} Vejo que está com a treinadora, vou garantir o sucesso de melhoria da sua arma, mas só dessa vez, não se acostume hein...")
+                        time.sleep(5)
+                        print("Melhorando.")
+                        time.sleep(1)
+                        print("Melhorando..")
+                        time.sleep(1)
+                        print("Melhorando...")
+                        time.sleep(1)
+                        print("Sucesso!")
+                        time.sleep(2)
+                        print('Você aumentou a chance de crítico da sua arma em 10%!')
+                        armas_atributos[arma_equipada]['chance_critico_arma'] += 0.10  # 10% chance de crítico
+                        armas_atributos[arma_equipada]['escalonamento_critico'] += 0.50
                         time.sleep(2)
                         print('Você usou 50 moedas de ouro e 1 pedra de forja')
                         gold -= 50
@@ -678,9 +686,11 @@ def forge():
                     else:
                         # Logica para ser 75% de chance de sucesso
                         print(f'{npc_forger} Você aumentou a chance de crítico em 10%!')
-                        chance_critico_arma += 0.1  # 10% chance de crítico
+                        armas_atributos[arma_equipada]['chance_critico_arma'] += 0.10  # 10% chance de crítico
                         time.sleep(2)
                         print('Você usou 50 moedas de ouro e 1 pedra de forja')
+                        if armas_atributos[arma_equipada]['escalonamento_critico'] == 0:
+                            armas_atributos[arma_equipada]['escalonamento_critico'] += 0.50
                         gold -= 50
                         pedra_forja -= 1
                         time.sleep(2)
@@ -690,7 +700,10 @@ def forge():
                     continue
             elif escolha_1 == '2' and first_forge is False:
                 if gold >= 100 and pedra_forja >= 2:
-                    print(f'{npc_forger} Você aumentou o dano base, defesa base e escalonamento do crítico em 10%!')
+                    print(f'{npc_forger} Você aumentou o dano base, defesa base e escalonamento do crítico em 15%!')
+                    armas_atributos[arma_equipada]['ataque'] += armas_atributos[arma_equipada]['ataque'] * 0.15  # 15% aumento de dano base
+                    armas_atributos[arma_equipada]['defesa'] += armas_atributos[arma_equipada]['defesa'] * 0.15  # 15% aumento de defesa base
+                    armas_atributos[arma_equipada]['escalonamento_critico'] += armas_atributos[arma_equipada]['escalonamento_critico'] * 0.25
                     # damage_base += 0.1  # 10% aumento de dano base
                     # defense_base += 0.1  # 10% aumento de defesa base
                     # escalonamento_critico += 0.1  # 10% aumento de escalonamento do crítico
@@ -715,11 +728,95 @@ def forge():
             break
         else:
             print('Opção inválida')
+    print("Você saiu da forja...")
+
+
+def church():
+    global envenenamento, hp_pot, mp_pot, current_health, gold, player_name
+    print("Você entrou na igreja...")
+    time.sleep(2)
+    if first_forge is True:
+        print(f'{npc_priest} Deus abençoe meus filhos...')
+    else:
+        print(f'{npc_priest} Deus te abençoe meu filho...')
+    time.sleep(2)
+    print(f'{player_name}: Amém Padre Marcelo')
+    time.sleep(2)
+    if first_church is True:
+        print(f'{npc_trainer} Amém Padre Marcelo')
+        time.sleep(2)
+    print(f'{npc_priest} Em que posso te ajudar hoje?')
+    time.sleep(2)
+    while True:
+        if first_church is True:
+            print(f'{npc_trainer} Aqui com o nosso Padre Marcelo, podemos comprar pots de vida e mana, curar a nossa vida depois de uma batalha ou pedir pra ele nos curar de algum envenenamento')
+            time.sleep(10)
+            print(f'{npc_trainer} Aqui, tome 20 moedas de ouro e compre 2 pots de vida e 2 pots de mana')
+            time.sleep(2)
+            gold += 20
+            print("Você ganhou 20 moedas de ouro de Jackie Chan")
+            time.sleep(2)
+            print(f"{npc_priest}"
+                  "\n[1] Comprar pots de vida e mana")
+        else:
+            print("[1] Comprar pots de vida e mana"
+                "\n[2] Retirar envenenamento"
+                "\n[3] Curar vida")
+        escolha = input("\nEscolha uma opção:  ")
+        time.sleep(2)
+        def comprar_hp_mp(gold, hp_pot, mp_pot):
+            escolha_1 = input(f"[1] Potion de vida"
+                             "\n[2] Potion de Mana"
+                             "\n[3] Voltar"
+                             "\n")
+            if escolha_1 == '1':
+                try:
+                    preco_hp = 5
+                    escolha_1_1 = int(input(f"Cada potion de vida custa {preco_hp} moedas de ouro, digite a quantidade que você quer comprar: "))
+                except ValueError:
+                    print("Escolha inválida, não é um número.")
+                    comprar_hp_mp()
+                    time.sleep(2)
+                else:
+                    preco_hp_final = escolha_1_1 * preco_hp
+                    if gold >= preco_hp_final:
+                        gold -= preco_hp_final
+                        print(f'Você comprou {escolha_1_1} poção(ões) de vida por {preco_hp_final}$')
+                        time.sleep(2)
+                        hp_pot += escolha_1_1
+                        print(f'Você agora tem {hp_pot} poção(ões) de vida')
+                        time.sleep(2)
+                        comprar_hp_mp(gold, hp_pot, mp_pot)
+                    else:
+                        print('Você não tem moedas de ouro suficientes')
+                        time.sleep(2)
+            elif escolha_1 == '2':
+                try:
+                    preco_mp = 5
+                    escolha_1_2 = int(input(f"Cada potion de mana custa {preco_mp} moedas de ouro, digite a quantidade que você quer comprar: "))
+                except ValueError:
+                    print("Escolha inválida, não é um número.")
+                    comprar_hp_mp()
+                    time.sleep(2)
+                else:
+                    preco_mp_final = escolha_1_2 * preco_mp
+                    if gold >= preco_mp_final:
+                        gold -= preco_mp_final
+                        print(f'Você comprou {escolha_1_2} poção(ões) de mana por {preco_mp_final}$')
+                        time.sleep(2)
+                        mp_pot += escolha_1_2
+                        print(f'Você agora tem {mp_pot} poção(ões) de mana')
+                        time.sleep(2)
+                    else:
+                        print('Você não tem moedas de ouro suficientes')
+                        time.sleep(2)
+        if escolha == '1':
+            comprar_hp_mp(gold, hp_pot, mp_pot)
+        
 
 
 def storygame():
-    print(f'{npc_julie} Antes de começar, te darei 10 moedas de ouro'
-          '\npara que você compre uma armadura e uma arma')
+    print(f'{npc_trainer} Antes de começar, te darei 10 moedas de ouro para que você compre uma armadura e uma arma')
     time.sleep(3)
     global gold
     gold += 10
@@ -730,24 +827,28 @@ def storygame():
     buy_itens()
     print('Você saiu da loja de equipamentos...')
     time.sleep(2)
-    print(f'{npc_julie} Agora vamos equipar seus itens, {player_name}')
+    print(f'{npc_trainer} Agora vamos equipar seus itens, {player_name}')
     backpack_itens()
     time.sleep(2)
-    print(f'{npc_julie} Agora você pode ir se aventurar na floresta')
+    print(f'{npc_trainer} Agora você pode ir se aventurar na floresta')
     hunt()
     time.sleep(2)
-    print(f'{npc_julie} Ora ora... vejo que você se saiu muito bem!')
+    print(f'{npc_trainer} Ora ora... vejo que você se saiu muito bem!')
     time.sleep(2)
-    print(f'{npc_julie} Agora iremos visitar a forja')
+    print(f'{npc_trainer} Agora iremos visitar a forja')
     forge()
+    time.sleep(2)
+    print(f"{npc_trainer} Vamos conhecer a igreja agora")
+    time.sleep(2)
+    church()
 
 
 def gameplay():
     print('Alguem se aproxima de você...')
     time.sleep(3)
-    print(f"{npc_julie} Olá! Seja bem vindo {player_name} a {village_name}")
+    print(f"{npc_trainer} Olá! Seja bem vindo {player_name} a {village_name}")
     time.sleep(5)
-    print(f"{npc_julie} Sou a treinadora da vila")
+    print(f"{npc_trainer} Sou a treinadora da vila")
     time.sleep(5)
     tutorial = tutorial_choice()
     if tutorial is True:
@@ -774,6 +875,8 @@ def main():
 
 
 if __name__ == '__main__':
+    player_name = 'Robertinho'
+    church()
     main()
 
 # Boss a ser implementado
