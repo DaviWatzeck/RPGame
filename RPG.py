@@ -732,15 +732,15 @@ def forge():
 
 
 def church():
-    global envenenamento, hp_pot, mp_pot, current_health, gold, player_name
+    global envenenamento, hp_pot, mp_pot, current_health, gold, player_name, first_church
     print("Você entrou na igreja...")
     time.sleep(2)
-    if first_forge is True:
+    if first_church is True:
         print(f'{npc_priest} Deus abençoe meus filhos...')
     else:
         print(f'{npc_priest} Deus te abençoe meu filho...')
     time.sleep(2)
-    print(f'{player_name}: Amém Padre Marcelo')
+    print(f'{player_name}: Amém Padre')
     time.sleep(2)
     if first_church is True:
         print(f'{npc_trainer} Amém Padre Marcelo')
@@ -749,6 +749,10 @@ def church():
     time.sleep(2)
     while True:
         if first_church is True:
+            print(f'{npc_trainer} Padre, esse é o nosso novo aventureiro {player_name}, estou explicando a ele como funciona as coisas por aqui')
+            time.sleep(7)
+            print(f'{npc_priest} Fique a vontade filho... Seja bem vindo {player_name}')
+            time.sleep(5)
             print(f'{npc_trainer} Aqui com o nosso Padre Marcelo, podemos comprar pots de vida e mana, curar a nossa vida depois de uma batalha ou pedir pra ele nos curar de algum envenenamento')
             time.sleep(10)
             print(f'{npc_trainer} Aqui, tome 20 moedas de ouro e compre 2 pots de vida e 2 pots de mana')
@@ -758,60 +762,94 @@ def church():
             time.sleep(2)
             print(f"{npc_priest}"
                   "\n[1] Comprar pots de vida e mana")
-        else:
-            print("[1] Comprar pots de vida e mana"
+        def escolha():
+            global envenenamento, hp_pot, mp_pot, current_health, gold, player_name, first_church
+            if first_church == False:
+                print("[1] Comprar pots de vida e mana"
                 "\n[2] Retirar envenenamento"
                 "\n[3] Curar vida")
-        escolha = input("\nEscolha uma opção:  ")
-        time.sleep(2)
-        def comprar_hp_mp(gold, hp_pot, mp_pot):
-            escolha_1 = input(f"[1] Potion de vida"
-                             "\n[2] Potion de Mana"
-                             "\n[3] Voltar"
-                             "\n")
-            if escolha_1 == '1':
-                try:
-                    preco_hp = 5
-                    escolha_1_1 = int(input(f"Cada potion de vida custa {preco_hp} moedas de ouro, digite a quantidade que você quer comprar: "))
-                except ValueError:
-                    print("Escolha inválida, não é um número.")
-                    comprar_hp_mp()
-                    time.sleep(2)
-                else:
-                    preco_hp_final = escolha_1_1 * preco_hp
-                    if gold >= preco_hp_final:
-                        gold -= preco_hp_final
-                        print(f'Você comprou {escolha_1_1} poção(ões) de vida por {preco_hp_final}$')
+            escolha = input("\nEscolha uma opção:  ")
+            time.sleep(2)
+            def comprar_hp_mp(gold, hp_pot, mp_pot):
+                global envenenamento, current_health, player_name, first_church
+                if hp_pot == 2 and mp_pot == 2:
+                    first_church = False
+                    print(f"{npc_trainer} Vejo que comprou as pot de vida e mana, vamos para o ultimo lugar, a Torre do conhecimento")
+                    time.sleep(5)
+                    return True
+                escolha_1 = input(f"[1] Potion de vida"
+                                "\n[2] Potion de Mana"
+                                "\n[3] Voltar"
+                                "\n")
+                if escolha_1 == '1':
+                    try:
+                        preco_hp = 5
+                        escolha_1_1 = int(input(f"1x HP POT = R${preco_hp}"
+                                                "\ndigite a quantidade que você quer comprar: "))
+                    except ValueError:
+                        print("Escolha inválida, não é um número.")
+                        comprar_hp_mp()
                         time.sleep(2)
-                        hp_pot += escolha_1_1
-                        print(f'Você agora tem {hp_pot} poção(ões) de vida')
+                    else:
                         time.sleep(2)
+                        preco_hp_final = escolha_1_1 * preco_hp
+                        if gold >= preco_hp_final:
+                            gold -= preco_hp_final
+                            print(f'Você comprou {escolha_1_1} poção(ões) de vida por {preco_hp_final}$')
+                            time.sleep(2)
+                            hp_pot += escolha_1_1
+                            print(f'Você agora tem {hp_pot} poção(ões) de vida')
+                            time.sleep(2)
+                        else:
+                            print('Você não tem moedas de ouro suficientes')
+                            time.sleep(2)
                         comprar_hp_mp(gold, hp_pot, mp_pot)
-                    else:
-                        print('Você não tem moedas de ouro suficientes')
+                elif escolha_1 == '2':
+                    try:
+                        preco_mp = 5
+                        escolha_1_2 = int(input(f"1x MP POT = R${preco_mp}"
+                                                "\ndigite a quantidade que você quer comprar: "))
+                    except ValueError:
+                        print("Escolha inválida, não é um número.")
+                        comprar_hp_mp()
                         time.sleep(2)
-            elif escolha_1 == '2':
-                try:
-                    preco_mp = 5
-                    escolha_1_2 = int(input(f"Cada potion de mana custa {preco_mp} moedas de ouro, digite a quantidade que você quer comprar: "))
-                except ValueError:
-                    print("Escolha inválida, não é um número.")
-                    comprar_hp_mp()
+                    else:
+                        time.sleep(2)
+                        preco_mp_final = escolha_1_2 * preco_mp
+                        if gold >= preco_mp_final:
+                            gold -= preco_mp_final
+                            print(f'Você comprou {escolha_1_2} poção(ões) de mana por {preco_mp_final}$')
+                            time.sleep(2)
+                            mp_pot += escolha_1_2
+                            print(f'Você agora tem {mp_pot} poção(ões) de mana')
+                            time.sleep(2)
+                        else:
+                            print('Você não tem moedas de ouro suficientes')
+                            time.sleep(2)
+                        comprar_hp_mp(gold, hp_pot, mp_pot)
+                elif escolha_1 == '3' and first_church is True:
+                    print(f'Você não pode sair sem comprar as pots com as moedas que o Jackie Chan te deu')
                     time.sleep(2)
+                    comprar_hp_mp(gold, hp_pot, mp_pot)
+                elif escolha_1 == '3' and first_church is False:
+                    escolha()
                 else:
-                    preco_mp_final = escolha_1_2 * preco_mp
-                    if gold >= preco_mp_final:
-                        gold -= preco_mp_final
-                        print(f'Você comprou {escolha_1_2} poção(ões) de mana por {preco_mp_final}$')
-                        time.sleep(2)
-                        mp_pot += escolha_1_2
-                        print(f'Você agora tem {mp_pot} poção(ões) de mana')
-                        time.sleep(2)
-                    else:
-                        print('Você não tem moedas de ouro suficientes')
-                        time.sleep(2)
-        if escolha == '1':
-            comprar_hp_mp(gold, hp_pot, mp_pot)
+                    print('Opção inválida')
+                    comprar_hp_mp(gold, hp_pot, mp_pot)
+                    
+            if escolha == '1':
+                decisao = comprar_hp_mp(gold, hp_pot, mp_pot)
+                if decisao is True:
+                    ...
+            elif escolha == '2' and first_church is False:
+                ...
+            elif escolha == '3' and first_church is False:
+                ...
+            elif escolha == '3' and first_church is True:
+                escolha()
+            else:
+                print('Opção inválida')
+        escolha()
         
 
 
@@ -841,6 +879,7 @@ def storygame():
     print(f"{npc_trainer} Vamos conhecer a igreja agora")
     time.sleep(2)
     church()
+    print('hihi')
 
 
 def gameplay():
