@@ -1,9 +1,17 @@
 import random
 import time
 
-# Creator: Davi Watzeck Souza
-# Code: Davi Watzeck Souza
-# Logic : Davi Watzeck Souza
+# |‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
+# |                                                      |
+# |                                                      |
+# |                                                      |
+# |                                                      |
+# |            Criado por Davi Watzeck Souza             |
+# |                                                      |
+# |                                                      |
+# |                                                      |
+# |                                                      |
+# |______________________________________________________|
 
 
 # Configurações
@@ -98,14 +106,16 @@ first_tower = True
 
 armaduras_compradas = []
 armas_compradas = []
-
 armadura_equipada = None
 arma_equipada = None
+
 pedra_forja = 0
 pedra_ressureicao = 0
 dano_arma = 0
 defesa_arma = 0
 chance_critico_arma = 0
+
+spells_learned = []
 
 
 def create_monster_name():
@@ -664,7 +674,7 @@ def forge():
             if escolha_1 == '1':
                 if gold >= 50 and pedra_forja >= 1:
                     if first_forge is True:
-                        print(f"{npc_forger} Vejo que está com a treinadora, vou garantir o sucesso de melhoria da sua arma, mas só dessa vez, não se acostume hein...")
+                        print(f"{npc_forger} Vejo que está com a treinador, vou garantir o sucesso de melhoria da sua arma, mas só dessa vez, não se acostume hein...")
                         time.sleep(5)
                         print("Melhorando.")
                         time.sleep(1)
@@ -762,25 +772,27 @@ def church():
             time.sleep(2)
             print(f"{npc_priest}"
                   "\n[1] Comprar pots de vida e mana")
-        def escolha():
-            global envenenamento, hp_pot, mp_pot, current_health, gold, player_name, first_church
-            if first_church == False:
-                print("[1] Comprar pots de vida e mana"
-                "\n[2] Retirar envenenamento"
-                "\n[3] Curar vida")
-            escolha = input("\nEscolha uma opção:  ")
-            time.sleep(2)
-            def comprar_hp_mp(gold, hp_pot, mp_pot):
-                global envenenamento, current_health, player_name, first_church
-                if hp_pot == 2 and mp_pot == 2:
+
+        else:
+            print("[1] Comprar pots de vida e mana"
+                  "\n[2] Retirar envenenamento"
+                  "\n[3] Curar vida"
+                  "\n[4] Sair")
+        escolha = input("\nEscolha uma opção:  ")
+        time.sleep(2)
+
+        def comprar_hp_mp(gold, hp_pot, mp_pot):
+            global envenenamento, current_health, player_name, first_church
+            while True:
+                if hp_pot >= 2 and mp_pot >= 2:
                     first_church = False
                     print(f"{npc_trainer} Vejo que comprou as pot de vida e mana, vamos para o ultimo lugar, a Torre do conhecimento")
                     time.sleep(5)
                     return True
-                escolha_1 = input(f"[1] Potion de vida"
-                                "\n[2] Potion de Mana"
-                                "\n[3] Voltar"
-                                "\n")
+                print("[1] Potion de vida"
+                      "\n[2] Potion de Mana"
+                      "\n[3] Voltar")
+                escolha_1 = input("\nEscolha uma opção:  ")
                 if escolha_1 == '1':
                     try:
                         preco_hp = 5
@@ -793,17 +805,33 @@ def church():
                     else:
                         time.sleep(2)
                         preco_hp_final = escolha_1_1 * preco_hp
-                        if gold >= preco_hp_final:
-                            gold -= preco_hp_final
-                            print(f'Você comprou {escolha_1_1} poção(ões) de vida por {preco_hp_final}$')
-                            time.sleep(2)
-                            hp_pot += escolha_1_1
-                            print(f'Você agora tem {hp_pot} poção(ões) de vida')
-                            time.sleep(2)
+                        if first_church is True:
+                            if escolha_1_1 != 2:
+                                print("Você foi instruído a comprar 2 unidades de pot de vida...")
+                            else:
+                                if gold >= preco_hp_final:
+                                    gold -= preco_hp_final
+                                    print(f'Você comprou {escolha_1_1} poção(ões) de vida por {preco_hp_final}$')
+                                    time.sleep(2)
+                                    hp_pot += escolha_1_1
+                                    print(f'Você agora tem {hp_pot} poção(ões) de vida')
+                                    time.sleep(2)
+                                else:
+                                    print('Você não tem moedas de ouro suficientes')
+                                    time.sleep(2)
+                                continue
                         else:
-                            print('Você não tem moedas de ouro suficientes')
-                            time.sleep(2)
-                        comprar_hp_mp(gold, hp_pot, mp_pot)
+                            if gold >= preco_hp_final:
+                                gold -= preco_hp_final
+                                print(f'Você comprou {escolha_1_1} poção(ões) de vida por {preco_hp_final}$')
+                                time.sleep(2)
+                                hp_pot += escolha_1_1
+                                print(f'Você agora tem {hp_pot} poção(ões) de vida')
+                                time.sleep(2)
+                            else:
+                                print('Você não tem moedas de ouro suficientes')
+                                time.sleep(2)
+                        continue
                 elif escolha_1 == '2':
                     try:
                         preco_mp = 5
@@ -811,46 +839,105 @@ def church():
                                                 "\ndigite a quantidade que você quer comprar: "))
                     except ValueError:
                         print("Escolha inválida, não é um número.")
-                        comprar_hp_mp()
                         time.sleep(2)
                     else:
                         time.sleep(2)
                         preco_mp_final = escolha_1_2 * preco_mp
-                        if gold >= preco_mp_final:
-                            gold -= preco_mp_final
-                            print(f'Você comprou {escolha_1_2} poção(ões) de mana por {preco_mp_final}$')
-                            time.sleep(2)
-                            mp_pot += escolha_1_2
-                            print(f'Você agora tem {mp_pot} poção(ões) de mana')
-                            time.sleep(2)
+                        if first_church is True:
+                            if escolha_1_1 != 2:
+                                print("Você foi instruído a comprar 2 unidades de pot de mana...")
+                            else:
+                                if gold >= preco_mp_final:
+                                    gold -= preco_mp_final
+                                    print(f'Você comprou {escolha_1_2} poção(ões) de mana por {preco_mp_final}$')
+                                    time.sleep(2)
+                                    mp_pot += escolha_1_2
+                                    print(f'Você agora tem {mp_pot} poção(ões) de mana')
+                                    time.sleep(2)
+                                else:
+                                    print('Você não tem moedas de ouro suficientes')
+                                    time.sleep(2)
                         else:
-                            print('Você não tem moedas de ouro suficientes')
-                            time.sleep(2)
-                        comprar_hp_mp(gold, hp_pot, mp_pot)
+                            if gold >= preco_mp_final:
+                                gold -= preco_mp_final
+                                print(f'Você comprou {escolha_1_2} poção(ões) de mana por {preco_mp_final}$')
+                                time.sleep(2)
+                                mp_pot += escolha_1_2
+                                print(f'Você agora tem {mp_pot} poção(ões) de mana')
+                                time.sleep(2)
+                            else:
+                                print('Você não tem moedas de ouro suficientes')
+                                time.sleep(2)
+                        continue
                 elif escolha_1 == '3' and first_church is True:
-                    print(f'Você não pode sair sem comprar as pots com as moedas que o Jackie Chan te deu')
+                    print('Você não pode sair sem comprar as pots com as moedas que o Jackie Chan te deu')
                     time.sleep(2)
-                    comprar_hp_mp(gold, hp_pot, mp_pot)
+                    continue
                 elif escolha_1 == '3' and first_church is False:
-                    escolha()
+                    continue
                 else:
                     print('Opção inválida')
-                    comprar_hp_mp(gold, hp_pot, mp_pot)
-                    
-            if escolha == '1':
-                decisao = comprar_hp_mp(gold, hp_pot, mp_pot)
-                if decisao is True:
-                    ...
-            elif escolha == '2' and first_church is False:
-                ...
-            elif escolha == '3' and first_church is False:
-                ...
-            elif escolha == '3' and first_church is True:
-                escolha()
-            else:
-                print('Opção inválida')
-        escolha()
-        
+                    continue
+
+        if escolha == '1':
+            returntrue = comprar_hp_mp(gold, hp_pot, mp_pot)
+            if returntrue is True:
+                break
+        elif escolha == '2' and first_church is False:
+            ...
+        elif escolha == '3' and first_church is False:
+            ...
+        elif escolha == '4' and first_church is False:
+            break
+        else:
+            print('Opção inválida')
+            continue
+    print("Você saiu da igreja...")
+    time.sleep(2)
+
+
+def npc_fanho(texto):
+    fanho = texto.replace('r', 'l').replace('R', 'L')
+
+    # Adiciona gagueira aleatória para tornar mais engraçado
+    fanho_gagueira = ''
+    for char in fanho:
+        if random.random() < 0.05 and char.isalpha():  # 20% de chance de gaguejar
+            fanho_gagueira += char + '-' + char
+        fanho_gagueira += char
+
+    print(f'{npc_wizard} {fanho_gagueira}')
+
+
+def tower_of_knowledge():
+    global first_tower, gold, spells_learned
+    print("Você adentrou na torre do conhecimento...")
+    time.sleep(3)
+    npc_fanho("Sejam muito bem vindos meus nobres guerreiros...")
+    if first_tower is True:
+        time.sleep(5)
+        print(f"{npc_trainer} ...")
+        print(f"{player_name}: ...")
+        time.sleep(3)
+        npc_fanho("O que foi? Nunca viram um pato mago?")
+        time.sleep(5)
+        print(f"{npc_trainer} Isso é o de menos kkkkkk")
+        time.sleep(3)
+        print(f"{player_name}: Nunca vi um pato fanho, ainda mais gago KKKKKKKK")
+        time.sleep(5)
+        npc_fanho("...")
+        time.sleep(3)
+        npc_fanho("Vocês vieram aqui pra me zoar ou pra aprenderem magias?")
+        time.sleep(5)
+        print(f"{npc_trainer} Bom, vamos lá entao, vou te dar 100 moedas de ouro para você aprender uma magia de cura básica")
+        time.sleep(7)
+        gold += 100
+        print("Você ganhou 100 moedas de ouro de Jackie Chan")
+        time.sleep(3)
+    while True:
+        if first_tower is True:
+            npc_fanho("Por agora, vou te ensinar uma magia de cura básica")
+            time.sleep(3)
 
 
 def storygame():
@@ -879,7 +966,22 @@ def storygame():
     print(f"{npc_trainer} Vamos conhecer a igreja agora")
     time.sleep(2)
     church()
-    print('hihi')
+    print(f'{npc_trainer} Agora, por ultimo, visitaremos a torre do conhecimento')
+    time.sleep(4)
+    print(f'{npc_trainer} Dizem que lá é um lugar com forças mágicas extremamente poderosas controladas por um......')
+    time.sleep(7)
+    print(f'{npc_trainer} PATO')
+    time.sleep(2)
+    print(f'{npc_trainer} ...')
+    time.sleep(2)
+    print(f'{npc_trainer} Pois é um pato kkkkk')
+    time.sleep(2)
+    print(f'{npc_trainer} Não me questione, questione o programador que fez isso')
+    time.sleep(5)
+    print(f'{npc_trainer} Enfim, vamos visitar a torre...')
+    time.sleep(2)
+    tower_of_knowledge()
+    print(f'{npc_trainer} Agora você está pronto para se tornar um herói!')
 
 
 def gameplay():
@@ -887,7 +989,7 @@ def gameplay():
     time.sleep(3)
     print(f"{npc_trainer} Olá! Seja bem vindo {player_name} a {village_name}")
     time.sleep(5)
-    print(f"{npc_trainer} Sou a treinadora da vila")
+    print(f"{npc_trainer} Sou o treinador da vila")
     time.sleep(5)
     tutorial = tutorial_choice()
     if tutorial is True:
@@ -914,8 +1016,6 @@ def main():
 
 
 if __name__ == '__main__':
-    player_name = 'Robertinho'
-    church()
     main()
 
 # Boss a ser implementado
