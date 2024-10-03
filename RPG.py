@@ -115,7 +115,11 @@ dano_arma = 0
 defesa_arma = 0
 chance_critico_arma = 0
 
-spells_learned = []
+spells_learned = {
+    "Ataque": [],
+    "Suporte": [],
+    "Buff's": []
+}
 
 
 def create_monster_name():
@@ -142,12 +146,12 @@ def create_monster_level():
 
 
 def generate_random_monster():
-    head = random.choice([' .....  ', " \\\||// ", '  ^^^^  ', '  ~~~~  ', '  ----  '])
+    head = random.choice([' .....  ', r" \\\||// ", '  ^^^^  ', '  ~~~~  ', '  ----  '])
     eyes = random.choice([' (o o)', ' (O O)', ' (- -)', ' (* *)', ' (x x)', ' (; ;)'])
-    mouth = random.choice(['  [X]  ', '  \_/  ', '  [-]  ', '  (.)  ', '   X  '])
-    arms = random.choice([' _/|\\_  ', ' </|\>  ', '  |||  ', '  /-\\  ', '  \\-/  '])
-    body = random.choice(['  /|\\  ', '  | |  ', ' |===|', '  |-|  ', '  | |  '])
-    legs = random.choice([' _/ \\_ ', '  V V  ', ' <| |> ', ' /   \\ ', '  >_>  '])
+    mouth = random.choice(['  [X]  ', r'  \_/  ', '  [-]  ', '  (.)  ', '   X  '])
+    arms = random.choice([r' _/|\\_  ', r' </|\>  ', '  |||  ', r'  /-\\  ', r'  \\-/  '])
+    body = random.choice([r'  /|\\  ', '  | |  ', ' |===|', '  |-|  ', '  | |  '])
+    legs = random.choice([r' _/ \\_ ', '  V V  ', ' <| |> ', r' /   \\ ', '  >_>  '])
 
     # Montar o monstro
     monster_visual = f"""
@@ -159,6 +163,25 @@ def generate_random_monster():
     {legs}
     """
     return monster_visual
+
+
+def player_health_mana():
+    global health_max, current_health
+    global mana_max, current_mana
+
+    # Cálculo da barra de vida
+    porcentagem_life = current_health / health_max
+    tamanho_barra_life = 20
+    preenchimento_life = int(tamanho_barra_life * porcentagem_life)
+    barra_life = "█" * preenchimento_life + "░" * (tamanho_barra_life - preenchimento_life)
+
+    # Cálculo da barra de mana
+    porcentagem_mana = current_mana / mana_max
+    tamanho_barra_mana = 20
+    preenchimento_mana = int(tamanho_barra_mana * porcentagem_mana)
+    barra_mana = "█" * preenchimento_mana + "░" * (tamanho_barra_mana - preenchimento_mana)
+
+    return f"Vida: [{barra_life}] {current_health}/{health_max}\nMana: [{barra_mana}] {current_mana}/{mana_max}"
 
 
 def generate_loot(monster_level):
@@ -446,6 +469,7 @@ def battle(monster_name, monster_level, hp_monster, strength_monster, defense_mo
     global hp_pot, mp_pot, gold, pedra_forja, pedra_ressureicao
     global defense, strength
     global player_level
+    global first_monster
     monster_visual = generate_random_monster()
     current_health_monster = hp_monster
     rodada_monstro = False
@@ -478,7 +502,7 @@ def battle(monster_name, monster_level, hp_monster, strength_monster, defense_mo
 
         # Exibir a barra de vida com o valor numérico ao lado
         print('\n')
-        print('Você: ‾\O/‾') # noqa : W605
+        print(r'Você: ‾\O/‾') # noqa : W605
         print(f'{player_name} HP: [{health_bar_player}] {current_health:.2f}/{health_max:.2f}')
         print(f'{player_name} MP: [{mana_bar_player}] {current_mana:.2f}/{mana_max:.2f}')
         time.sleep(1)
@@ -546,6 +570,8 @@ def battle(monster_name, monster_level, hp_monster, strength_monster, defense_mo
             print(f"Você ganhou {xp_monster} XP.")
             time.sleep(1)
             if xp >= xp_next_level:
+                if first_monster is True:
+                    first_monster = False
                 print("Parabéns! Você subiu de nível!")
                 player_level += 1
                 xp -= xp_next_level
@@ -563,6 +589,8 @@ def battle(monster_name, monster_level, hp_monster, strength_monster, defense_mo
                 time.sleep(2)
                 # Atualiza os atributos do jogador
                 strength, defense, health_max, mana_max = new_strength, new_defense, new_health_max, new_mana_max
+                current_health = health_max
+                current_mana = mana_max
 
             loot = generate_loot(monster_level)
             if loot != {}:
@@ -884,9 +912,39 @@ def church():
             if returntrue is True:
                 break
         elif escolha == '2' and first_church is False:
-            ...
+            if envenenamento is True:
+                print(f"{npc_priest} Vejo que está envenenado, posso retirar o envenenamento por 15 moedas de ouro, aceita?")
+                time.sleep(3)
+                escolha_2 = input("\n[1] Sim"
+                                  "\n[2] Não")
+                if escolha_2 == '1' and gold >= 15:
+                    print(f"{npc_priest} Per divinas vires hanc veneficium tollo.")
+                    time.sleep(5)
+                    envenenamento = False
+                    print(f"{npc_priest} Feito! Envenenamento retirado")
+                elif escolha_2 == '1' and gold < 15:
+                    print(f"{npc_priest} Não posso aceitar, você não tem moedas de ouro suficientes")
+                elif escolha == '2':
+                    continue
+                else:
+                    print('Opção inválida')
+                    continue
+            else:
+                print(f"{npc_priest} Você nao está envenenado")
         elif escolha == '3' and first_church is False:
-            ...
+            if current_health != health_max:
+                print(f"{npc_priest} Eu posso recuperar sua vida por 20 moedas de ouro, aceita?")
+                time.sleep(3)
+                escolha_3 = input("\n[1] Sim"
+                                  "\n[2] Não")
+                if escolha_3 == '1' and gold >= 20:
+                    print(f"{npc_priest} Per numina divina, Dono tibi sanitatem")
+                    time.sleep(5)
+                    gold -= 20
+                    current_health = health_max
+                    print(f"{npc_priest} Feito! Vida recuperada")
+            else:
+                print(f"{npc_priest} Não posso aceitar, você já está com a vida cheia")
         elif escolha == '4' and first_church is False:
             break
         else:
@@ -938,6 +996,31 @@ def tower_of_knowledge():
         if first_tower is True:
             npc_fanho("Por agora, vou te ensinar uma magia de cura básica")
             time.sleep(3)
+            print('Você aprendeu uma magia de cura: "Exura Ico"')
+            gold -= 100
+            spells_learned["Suporte"].append("Exura Ico")
+            time.sleep(3)
+            npc_fanho("A Magia Exura Ico cura sua vida com base no nível da sua habilidade de magia")
+            time.sleep(6)
+            first_tower = False
+        print("╔═════════════════════════╗")
+        print("║ 1. Aprender magias      ║")
+        print("║ 2. Aprimorar magia      ║")
+        print("║ 3. Melhorar habilidade  ║")
+        print("║ 4. Sair                 ║")
+        print("╚═════════════════════════╝")
+        escolha = input("Digite uma opção: ")
+        if escolha == '1':
+            ...
+        elif escolha == '2':
+            ...
+        elif escolha == '3':
+            ...
+        elif escolha == '4':
+            break
+        else:
+            print('Opção inválida')
+            continue
 
 
 def storygame():
@@ -981,7 +1064,19 @@ def storygame():
     print(f'{npc_trainer} Enfim, vamos visitar a torre...')
     time.sleep(2)
     tower_of_knowledge()
-    print(f'{npc_trainer} Agora você está pronto para se tornar um herói!')
+    print(f'{npc_trainer} Você está pronto para se tornar um herói!')
+    time.sleep(5)
+    print(f'{npc_trainer} Esperamos que você seja um herói forte!')
+    time.sleep(5)
+    print(f'{npc_trainer} Agora você estará por conta própria')
+    time.sleep(3)
+    print(f'{npc_trainer} No seu nível 10, você pode enfrentar um boss')
+    time.sleep(2)
+    print(f'{npc_trainer} No seu nível 50, você pode enfrentar o boss final do jogo')
+    time.sleep(3)
+    print(f'{npc_trainer} Boa sorte!!!')
+    time.sleep(2)
+    maingame()
 
 
 def gameplay():
@@ -996,6 +1091,39 @@ def gameplay():
         tutorial_gameplay()
     elif tutorial is False:
         storygame()
+
+
+def maingame():
+    while True:
+        print(player_health_mana())
+        print("╔══════════════════════════╗")
+        print("║ 1. Mercante              ║")
+        print("║ 2. Forja                 ║")
+        print("║ 3. Igreja                ║")
+        print("║ 4. Torre do conhecimento ║")
+        print("║ 5. Mochila               ║")
+        print("║ 6. Ver Status            ║")
+        print("║ 7. Ir para floresta      ║")
+        print("╚══════════════════════════╝")
+        escolha = input("Escolha uma opção: ")
+        if escolha == '1':
+            buy_itens()
+        elif escolha == '2':
+            forge()
+        elif escolha == '3':
+            church()
+        elif escolha == '4':
+            tower_of_knowledge()
+        elif escolha == '5':
+            backpack_itens()
+        elif escolha == '6':
+            ...
+        elif escolha == '7':
+            hunt()
+        else:
+            print('Opção inválida')
+            time.sleep(2)
+            continue
 
 
 def main():
